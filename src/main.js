@@ -1,4 +1,4 @@
-const opn = require('opn');
+const openInDefaultBrowser = require('opn');
 
 // #region Constants
 const GOOGLE = 'google';
@@ -9,7 +9,7 @@ const searchEngineTokens = {
     [GITHUB]: ['gh', 'git', 'github'],
 };
 
-const tokenURLs = {
+const searchEngineURLs = {
     [GOOGLE]: 'https://www.google.com/search?q=',
     [GITHUB]: 'https://github.com/search?q=',
 };
@@ -24,12 +24,13 @@ function prepareSearchQuery(tokenIndex, processArgs) {
     return processArgs.slice((tokenIndex + 1), processArgs.length).join(' ');
 }
 
-function getSearchEngine(userToken, acceptableSearchTokens) {
+function getSearchEngine(userToken, validSearchTokens) {
     let matchedToken;
 
-    for (const searchEngine in acceptableSearchTokens) {
-        if (acceptableSearchTokens[searchEngine].indexOf(userToken) !== -1) {
-            matchedToken = searchEngine;
+    const engineTokenEntries = Object.entries(validSearchTokens);
+    for (const searchEngine of engineTokenEntries) {
+        if (searchEngine[1].indexOf(userToken) !== -1) {
+            matchedToken = searchEngine[0];
             break;
         }
     }
@@ -44,7 +45,7 @@ if (args.length > (searchTokenIndex + 1)) {
     if (matchedToken) {
         const searchQuery = prepareSearchQuery(searchTokenIndex, args);
 
-        opn(tokenURLs[matchedToken] + searchQuery);
+        openInDefaultBrowser(searchEngineURLs[matchedToken] + searchQuery);
     }
 }
 
