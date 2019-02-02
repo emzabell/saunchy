@@ -1,45 +1,52 @@
 const opn = require('opn');
 
-const args = process.argv;
-const searchTokenIndex = 2;
+// #region Constants
+const GOOGLE = 'google';
+const GITHUB = 'github';
 
-const searchTokens = {
-    google: ['go', 'goo', 'goog', 'google'],
-    github: ['gh', 'git', 'github']
+const searchEngineTokens = {
+    [GOOGLE]: ['go', 'goo', 'goog', 'google'],
+    [GITHUB]: ['gh', 'git', 'github'],
 };
 
 const tokenURLs = {
-    [searchTokens.google]: 'https://www.google.com/search?q=',
-    [searchTokens.github]: 'https://github.com/search?q=',
+    [GOOGLE]: 'https://www.google.com/search?q=',
+    [GITHUB]: 'https://github.com/search?q=',
 };
 
-const indexOfUserSearchToken = getSearchTokenIndex(args[searchTokenIndex], searchTokens);
+const args = process.argv;
+// Expecting searchTokenIndex to be 2 given ['node', 'main.js', 'searchToken'] args
+const searchTokenIndex = 2;
+// #endregion
 
-if (args.length > (searchTokenIndex + 1) &&  indexOfUserSearchToken != -1) {
-    const searchQuery = joinTrailingArgs(searchTokenIndex, args);
-
-    opn(tokenURLs[searchTokens[indexOfUserSearchToken]] + searchQuery);
-
-    process.exit(0);
-}
-
-function joinTrailingArgs(tokenIndex, processArgs) {
+// #region Helper Functions
+function prepareSearchQuery(tokenIndex, processArgs) {
     return processArgs.slice((tokenIndex + 1), processArgs.length).join(' ');
 }
 
-function getSearchTokenIndex(userToken, acceptableSearchTokens) {
-    let matchIndex = -1;
-    let matchFound = false;
+function getSearchEngine(userToken, acceptableSearchTokens) {
+    let matchedToken;
 
-    for (let index in acceptableSearchTokens) {
-        if (acceptableSearchTokens[index].indexOf(userToken) != -1) {
-            matchIndex = index;
-            matchFound = true;
-        }
-        if (matchFound) {
+    for (const searchEngine in acceptableSearchTokens) {
+        if (acceptableSearchTokens[searchEngine].indexOf(userToken) !== -1) {
+            matchedToken = searchEngine;
             break;
         }
     }
-
-    return matchIndex;
+    return matchedToken;
 }
+// #endregion
+
+// #region Main Program
+if (args.length > (searchTokenIndex + 1)) {
+    const matchedToken = getSearchEngine(args[searchTokenIndex], searchEngineTokens);
+
+    if (matchedToken) {
+        const searchQuery = prepareSearchQuery(searchTokenIndex, args);
+
+        opn(tokenURLs[matchedToken] + searchQuery);
+    }
+}
+
+process.exit(0);
+// #endregion
