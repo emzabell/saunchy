@@ -28,9 +28,11 @@ const searchEngineURLs = {
     [YOUTUBE]: 'https://www.youtube.com/results?search_query=',
 };
 
+const topLevelDomains = ['.com', '.org', '.edu', '.gov', '.net', '.io', '.uk', '.us'];
+
 const args = process.argv;
-// Expecting searchTokenIndex to be 2 given ['node', 'main.js', 'searchToken'] args
-const firstUserArg = 2;
+const firstUserArgIndex = 2;
+const firstUserArg = args[firstUserArgIndex];
 // #endregion
 
 // #region Helper Functions
@@ -97,23 +99,34 @@ function getBookmarkURLToLaunch(requestedBookmark, knownBookmarks) {
 // #endregion
 
 // #region Main Program
+// URL passthrough or bookmark mode when only one argument was provided by user
+if (args.length === (firstUserArgIndex + 1)) {
+    const userHasSuppliedURL = topLevelDomains.some(domain => firstUserArg.includes(domain));
 
-// Bookmark mode when only one argument was provided by user
-if (args.length === (firstUserArg + 1)) {
-    const bookmarks = getBookmarksFromFile();
-    const bookmarkURLToLaunch = getBookmarkURLToLaunch(args[firstUserArg], bookmarks);
+    if (userHasSuppliedURL) {
+        let userSuppliedURL = firstUserArg;
 
-    if (bookmarkURLToLaunch) {
-        openInDefaultBrowser(bookmarkURLToLaunch);
+        if (!userSuppliedURL.startsWith('http://') && !userSuppliedURL.startsWith('https://')) {
+            userSuppliedURL = `https://${userSuppliedURL}`;
+        }
+
+        openInDefaultBrowser(userSuppliedURL);
+    } else {
+        const bookmarks = getBookmarksFromFile();
+        const bookmarkURLToLaunch = getBookmarkURLToLaunch(firstUserArg, bookmarks);
+
+        if (bookmarkURLToLaunch) {
+            openInDefaultBrowser(bookmarkURLToLaunch);
+        }
     }
 }
 
 // Search mode when two or more arguments were provided by user
-if (args.length > (firstUserArg + 1)) {
-    const searchEngineFound = getSearchEngine(args[firstUserArg], searchEngineTokens);
+if (args.length > (firstUserArgIndex + 1)) {
+    const searchEngineFound = getSearchEngine(firstUserArg, searchEngineTokens);
 
     if (searchEngineFound) {
-        const searchQuery = prepareSearchQuery(firstUserArg, args);
+        const searchQuery = prepareSearchQuery(firstUserArgIndex, args);
 
         openInDefaultBrowser(searchEngineURLs[searchEngineFound] + searchQuery);
     }
