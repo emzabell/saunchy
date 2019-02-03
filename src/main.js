@@ -1,41 +1,47 @@
-const openInDefaultBrowser = require('opn');
 const fs = require('fs');
 const cheerio = require('cheerio');
+const launchDefaultBrowser = require('opn');
 
 // #region Constants
-const DEFINE = 'define';
-const GOOGLE = 'google';
-const GITHUB = 'github';
-const NPM = 'npm';
-const STACKOVERFLOW = 'stackoverflow';
-const YOUTUBE = 'youtube';
-
-const searchEngineTokens = {
-    [DEFINE]: ['define', 'def', 'dict'],
-    [GOOGLE]: ['google', 'go', 'goo', 'goog'],
-    [GITHUB]: ['gh', 'git', 'github'],
-    [NPM]: ['npm', 'package', 'pkg'],
-    [STACKOVERFLOW]: ['so', 'stackoverflow', 'stack', 'overflow'],
-    [YOUTUBE]: ['youtube', 'yt', 'video', 'vid'],
-};
-
-const searchEngineURLs = {
-    [DEFINE]: 'https://www.google.com/search?q=define+',
-    [GOOGLE]: 'https://www.google.com/search?q=',
-    [GITHUB]: 'https://github.com/search?q=',
-    [NPM]: 'https://www.npmjs.com/search?q=',
-    [STACKOVERFLOW]: 'https://stackoverflow.com/search?q=',
-    [YOUTUBE]: 'https://www.youtube.com/results?search_query=',
-};
-
-const topLevelDomains = ['.com', '.org', '.edu', '.gov', '.net', '.io', '.uk', '.us'];
-
 const args = process.argv;
 const firstUserArgIndex = 2;
 const firstUserArg = args[firstUserArgIndex];
 // #endregion
 
 // #region Helper Functions
+function getConfig() {
+    let userConfig;
+    const configFilePath = `${__dirname}/config.json`;
+
+    if (fs.existsSync(configFilePath)) {
+        const configFileString = fs.readFileSync(configFilePath, 'utf-8');
+
+        userConfig = JSON.parse(configFileString);
+    }
+
+    return userConfig;
+}
+
+function getSearchEngineTokens(config) {
+    const tokens = {};
+
+    config.searchEngines.forEach((searchEngine) => {
+        tokens[searchEngine.name] = searchEngine.tokens;
+    });
+
+    return tokens;
+}
+
+function getSearchEngineURLs(config) {
+    const urls = {};
+
+    config.searchEngines.forEach((searchEngine) => {
+        urls[searchEngine.name] = searchEngine.path;
+    });
+
+    return urls;
+}
+
 function prepareSearchQuery(tokenIndex, processArgs) {
     return processArgs.slice((tokenIndex + 1), processArgs.length).join(' ');
 }
@@ -45,7 +51,8 @@ function getSearchEngine(userToken, validSearchTokens) {
     const engineTokenEntries = Object.entries(validSearchTokens);
 
     for (const searchEngine of engineTokenEntries) {
-        if (searchEngine[1].indexOf(userToken) !== -1) {
+        // [0] key/search engine name, [1] value/array of valid tokens
+        if (searchEngine[1].indexOf(userToken.toLowerCase()) !== -1) {
             matchedToken = searchEngine[0];
             break;
         }
@@ -99,6 +106,11 @@ function getBookmarkURLToLaunch(requestedBookmark, knownBookmarks) {
 // #endregion
 
 // #region Main Program
+const userConfig = getConfig();
+const searchEngineTokens = getSearchEngineTokens(userConfig);
+const searchEngineURLs = getSearchEngineURLs(userConfig);
+const topLevelDomains = userConfig.topLevelDomains;
+
 // URL passthrough or bookmark mode when only one argument was provided by user
 if (args.length === (firstUserArgIndex + 1)) {
     const userHasSuppliedURL = topLevelDomains.some(domain => firstUserArg.includes(domain));
@@ -110,13 +122,13 @@ if (args.length === (firstUserArgIndex + 1)) {
             userSuppliedURL = `https://${userSuppliedURL}`;
         }
 
-        openInDefaultBrowser(userSuppliedURL);
+        launchDefaultBrowser(userSuppliedURL);
     } else {
         const bookmarks = getBookmarksFromFile();
         const bookmarkURLToLaunch = getBookmarkURLToLaunch(firstUserArg, bookmarks);
 
         if (bookmarkURLToLaunch) {
-            openInDefaultBrowser(bookmarkURLToLaunch);
+            launchDefaultBrowser(bookmarkURLToLaunch);
         }
     }
 }
@@ -128,7 +140,7 @@ if (args.length > (firstUserArgIndex + 1)) {
     if (searchEngineFound) {
         const searchQuery = prepareSearchQuery(firstUserArgIndex, args);
 
-        openInDefaultBrowser(searchEngineURLs[searchEngineFound] + searchQuery);
+        launchDefaultBrowser(searchEngineURLs[searchEngineFound] + searchQuery);
     }
 }
 
