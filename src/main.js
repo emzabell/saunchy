@@ -4,18 +4,19 @@ const cheerio = require('cheerio');
 const launchDefaultBrowser = require('opn');
 
 // #region Constants
-const args = process.argv;
-const firstUserArgIndex = 2; // npm run start = ['node', 'src/main.js', 'firstUserArg']
-const firstUserArg = args[firstUserArgIndex];
+const CONFIG_FILE_PATH = `${__dirname}/config.json`;
+const BOOKMARKS_FILE_PATH = `${__dirname}/bookmarks.html`;
+const ARGS = process.argv;
+const FIRST_USER_ARG_INDEX = 2; // args = ['node', 'src/main.js', 'firstUserArg']
+const FIRST_USER_ARG = ARGS[FIRST_USER_ARG_INDEX];
 // #endregion
 
 // #region Helper Functions
 function getConfig() {
     let userConfig;
-    const configFilePath = `${__dirname}/config.json`;
 
-    if (fs.existsSync(configFilePath)) {
-        const configFileString = fs.readFileSync(configFilePath, 'utf-8');
+    if (fs.existsSync(CONFIG_FILE_PATH)) {
+        const configFileString = fs.readFileSync(CONFIG_FILE_PATH, 'utf-8');
 
         userConfig = JSON.parse(configFileString);
     }
@@ -43,10 +44,6 @@ function getSearchEngineURLs(config) {
     return urls;
 }
 
-function prepareSearchQuery(tokenIndex, processArgs) {
-    return processArgs.slice((tokenIndex + 1), processArgs.length).join(' ');
-}
-
 function getSearchEngine(userToken, validSearchTokens) {
     let matchedToken;
     const engineTokenEntries = Object.entries(validSearchTokens);
@@ -64,10 +61,9 @@ function getSearchEngine(userToken, validSearchTokens) {
 
 function getBookmarksFromFile() {
     const bookmarks = {};
-    const bookmarksFilePath = `${__dirname}/bookmarks.html`;
 
-    if (fs.existsSync(bookmarksFilePath)) {
-        const bookmarksFileString = fs.readFileSync(bookmarksFilePath, 'utf-8');
+    if (fs.existsSync(BOOKMARKS_FILE_PATH)) {
+        const bookmarksFileString = fs.readFileSync(BOOKMARKS_FILE_PATH, 'utf-8');
         const $ = cheerio.load(bookmarksFileString);
 
         $('a').each((index, element) => {
@@ -93,7 +89,7 @@ function getBookmarkURLToLaunch(requestedBookmark, knownBookmarks) {
         }
     });
 
-    // Assume that shorter URL is desired if more than one match
+    // Assume shorter URL is desired if more than one match
     if (matchedBookmarkURLs.length > 1) {
         matchedBookmarkURLs.sort((a, b) => a.length - b.length);
     }
@@ -112,12 +108,12 @@ const searchEngineTokens = getSearchEngineTokens(userConfig);
 const searchEngineURLs = getSearchEngineURLs(userConfig);
 const topLevelDomains = userConfig.topLevelDomains;
 
-// URL passthrough or bookmark mode when only one argument was provided by user
-if (args.length === (firstUserArgIndex + 1)) {
-    const userHasSuppliedURL = topLevelDomains.some(domain => firstUserArg.includes(domain));
+if (ARGS.length === (FIRST_USER_ARG_INDEX + 1)) {
+    // URL passthrough or bookmark mode when only one argument was provided by user
+    const userHasSuppliedURL = topLevelDomains.some(domain => FIRST_USER_ARG.includes(domain));
 
     if (userHasSuppliedURL) {
-        let userSuppliedURL = firstUserArg;
+        let userSuppliedURL = FIRST_USER_ARG;
 
         if (!userSuppliedURL.startsWith('http://') && !userSuppliedURL.startsWith('https://')) {
             userSuppliedURL = `https://${userSuppliedURL}`;
@@ -127,21 +123,19 @@ if (args.length === (firstUserArgIndex + 1)) {
     } else {
         const bookmarks = getBookmarksFromFile();
         if (bookmarks) {
-            const bookmarkURLToLaunch = getBookmarkURLToLaunch(firstUserArg, bookmarks);
+            const bookmarkURLToLaunch = getBookmarkURLToLaunch(FIRST_USER_ARG, bookmarks);
 
             if (bookmarkURLToLaunch) {
                 launchDefaultBrowser(bookmarkURLToLaunch);
             }
         }
     }
-}
-
-// Search mode when two or more arguments were provided by user
-if (args.length > (firstUserArgIndex + 1)) {
-    const searchEngineFound = getSearchEngine(firstUserArg, searchEngineTokens);
+} else if (ARGS.length > (FIRST_USER_ARG_INDEX + 1)) {
+    // Search mode when two or more arguments were provided by user
+    const searchEngineFound = getSearchEngine(FIRST_USER_ARG, searchEngineTokens);
 
     if (searchEngineFound) {
-        const searchQuery = prepareSearchQuery(firstUserArgIndex, args);
+        const searchQuery = ARGS.slice((FIRST_USER_ARG_INDEX + 1), ARGS.length).join(' ');
 
         launchDefaultBrowser(searchEngineURLs[searchEngineFound] + searchQuery);
     }

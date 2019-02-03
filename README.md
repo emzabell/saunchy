@@ -22,6 +22,5 @@ If you'd like to import your bookmarks, place a Netscape-format Bookmark HTML Fi
 **saunchy < Search Engine Token > < Keywords For Search >** -- Runs utility in Search Mode.
 
 ### Potential Future Enhancements
-* Package as exe
 * Build lightweight GUI
 * ???

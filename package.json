@@ -2,7 +2,12 @@
   "name": "saunchy",
   "version": "1.0.0",
   "description": "A simple Node CLI utility to replace Launchy search functionality because my workplace doesn't approve of Launchy",
+  "author": "Eric Zabell",
+  "license": "ISC",
   "main": "main.js",
+  "bin": {
+    "saunchy": "./src/main.js"
+  },
   "scripts": {
     "start": "node src/main.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,15 +21,8 @@
     "saunchy",
     "launchy",
     "search",
-    "cli",
-    "search",
     "cli"
   ],
-  "author": "Eric Zabell",
-  "license": "ISC",
-  "bin": {
-    "saunchy": "./src/main.js"
-  },
   "bugs": {
     "url": "https://github.com/emzabell/saunchy/issues"
   },
