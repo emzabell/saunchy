@@ -6,10 +6,11 @@ Clone repo, configure src/config.json as desired, import bookmarks (optional), a
 
 Within config.json:
 * *topLevelDomains* are the domains that you'd like to support for passthrough URL launching. If any of these strings are found within your search string, it will simply launch the URL you provided.
+
 * *searchEngines* define the search engines you'd like to support for searching.
   * The name field can be anything you like. It does not change how you'll call the utility.
   * The tokens field is used to define the arguments you'd like to support when selecting that engine. E.g., "npm run start **google** mySearchQueryHere" and "npm run start **goo** mySearchQueryHere" are equivalent due to the default token config.
-  
+
 If you'd like to import your bookmarks, place a Netscape-format Bookmark HTML File (as is exported by Chrome) in the src directory named bookmarks.html. Anytime you call the utility with a single argument that doesn't contain a topLevelDomain (suggesting URL passthrough), it will try to find and launch the bookmark you requested.
 
 ### Commands
