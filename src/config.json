@@ -3,7 +3,7 @@
     "searchEngines": [
         {   
             "name": "amazon",
-            "path": "https://www.amazon.com/s?keywords=",
+            "path": "https://smile.amazon.com/s?keywords=",
             "tokens": ["amazon", "az"]
         },
         {   
@@ -20,6 +20,11 @@
             "name": "github",
             "path": "https://github.com/search?q=",
             "tokens": ["gh", "git", "github"]
+        },
+        {
+            "name": "maps",
+            "path": "https://www.google.com/maps/search/",
+            "tokens": ["maps", "map"]
         },
         {   
             "name": "npm",
