@@ -36,17 +36,22 @@
             "path": "https://www.thesaurus.com/browse/",
             "tokens": ["thesaurus", "syn"]
         },
-        {   
+        {
+            "name": "weather",
+            "path": "https://www.google.com/search?q=weather+",
+            "tokens": ["weather", "weath", "wea"]
+        },
+        {
             "name": "wikipedia",
             "path": "https://en.wikipedia.org/w/index.php?search=",
             "tokens": ["wiki", "wikipedia"]
         },
-        {   
+        {
             "name": "youtube",
             "path": "https://www.youtube.com/results?search_query=",
             "tokens": ["youtube", "yt", "video", "vid"]
         },
-        {   
+        {
             "name": "yelp",
             "path": "https://www.yelp.com/search?find_desc=",
             "tokens": "yelp"

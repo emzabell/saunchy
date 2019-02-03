@@ -4,7 +4,7 @@ const launchDefaultBrowser = require('opn');
 
 // #region Constants
 const args = process.argv;
-const firstUserArgIndex = 2;
+const firstUserArgIndex = 2; // npm run start = ['node', 'src/main.js', 'firstUserArg']
 const firstUserArg = args[firstUserArgIndex];
 // #endregion
 
