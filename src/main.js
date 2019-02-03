@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const fs = require('fs');
 const cheerio = require('cheerio');
 const launchDefaultBrowser = require('opn');
@@ -125,10 +126,12 @@ if (args.length === (firstUserArgIndex + 1)) {
         launchDefaultBrowser(userSuppliedURL);
     } else {
         const bookmarks = getBookmarksFromFile();
-        const bookmarkURLToLaunch = getBookmarkURLToLaunch(firstUserArg, bookmarks);
+        if (bookmarks) {
+            const bookmarkURLToLaunch = getBookmarkURLToLaunch(firstUserArg, bookmarks);
 
-        if (bookmarkURLToLaunch) {
-            launchDefaultBrowser(bookmarkURLToLaunch);
+            if (bookmarkURLToLaunch) {
+                launchDefaultBrowser(bookmarkURLToLaunch);
+            }
         }
     }
 }

@@ -22,6 +22,9 @@
   ],
   "author": "Eric Zabell",
   "license": "ISC",
+  "bin": {
+    "saunchy": "./src/main.js"
+  },
   "bugs": {
     "url": "https://github.com/emzabell/saunchy/issues"
   },
