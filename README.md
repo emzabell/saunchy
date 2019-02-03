@@ -14,7 +14,7 @@ Within config.json:
 If you'd like to import your bookmarks, place a Netscape-format Bookmark HTML File (as is exported by Chrome) in the src directory named bookmarks.html. Anytime you call the utility with a single argument that doesn't contain a topLevelDomain (suggesting URL passthrough), it will try to find and launch the bookmark you requested.
 
 ### Commands
-* Use 'npm run start' if you don't want to run 'npm link' to create a symlink to the bin
+* Use 'npm run start' instead of 'saunchy' if you don't want to run 'npm link' to create a symlink to the bin
 
 
 **saunchy < URL | Bookmark Name >** -- Runs utility in URL Passthrough or Bookmark Mode, respectively.
