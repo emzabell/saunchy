@@ -3,7 +3,7 @@ A very simple Node CLI utility to replace Launchy search functionality due to so
 
 ### Getting Started
 Clone repo and configure src/config.json as desired. Within config.json:
-* *topLevelDomains* are the domains that you'd like to support for passthrough URL launching. If any of these strings are found within your search string, it will simply launch the URL you provided.
+* *topLevelDomains* are the domains that you'd like to support for passthrough URL launching. If any of these strings are found within your first argument, it will simply launch the URL you provided.
 * *searchEngines* define the search engines you'd like to support for searching.
   * The name field can be anything you like. It does not change how you'll call the utility.
   * The tokens field is used to define the arguments you'd like to support when selecting that engine. E.g., "npm run start **google** mySearchQueryHere" and "npm run start **goo** mySearchQueryHere" are equivalent due to the default token config.
